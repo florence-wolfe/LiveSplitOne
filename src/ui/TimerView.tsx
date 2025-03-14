@@ -73,7 +73,7 @@ export class TimerView extends React.Component<Props, State> {
     }
 
     private renderView() {
-        const showManualGameTime = this.props.generalSettings.showManualGameTime;
+        const manualGameTime = this.props.generalSettings.manualGameTime;
 
         return <DragUpload
             importLayout={(file) => this.props.callbacks.importLayoutFromFile(file)}
@@ -169,7 +169,7 @@ export class TimerView extends React.Component<Props, State> {
                 </div>
             }
             {
-                showManualGameTime && <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                manualGameTime.enabled && <div className="buttons" style={{ width: this.props.layoutWidth }}>
                     <input
                         type="text"
                         className="manual-game-time"
@@ -193,7 +193,7 @@ export class TimerView extends React.Component<Props, State> {
                                 } else {
                                     using gameTime = TimeSpan.parse(this.state.manualGameTime);
                                     if (gameTime !== null) {
-                                        if (showManualGameTime.mode === MANUAL_GAME_TIME_MODE_SEGMENT_TIMES) {
+                                        if (manualGameTime.mode === MANUAL_GAME_TIME_MODE_SEGMENT_TIMES) {
                                             const currentGameTime = timer.currentTime().gameTime();
                                             if (currentGameTime !== null) {
                                                 gameTime.addAssign(currentGameTime);

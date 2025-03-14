@@ -39,7 +39,11 @@ if ('PressureObserver' in window) {
                 }
                 updateBatteryAwareFrameRate();
             });
-            await observer.observe("cpu", { sampleInterval: 2_000 });
+            try {
+                await observer.observe("cpu", { sampleInterval: 2_000 });
+            } catch (err) {
+                console.error(err)
+            }
         } catch {
             // The Compute Pressure API is not supported by every browser.
         }

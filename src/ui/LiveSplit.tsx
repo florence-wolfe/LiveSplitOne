@@ -29,6 +29,7 @@ import variables from "../css/variables.scss";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
+import { TheRunServer } from "../api/TheRunServer";
 
 const buttonHeight = parseFloat(variables.buttonHeight);
 const largeMargin = parseFloat(variables.largeMargin);
@@ -286,6 +287,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     public componentDidUpdate() {
         this.handleAutomaticResize();
+        console.log('livesplit.tsx', this)
     }
 
     public componentWillUnmount() {
@@ -711,7 +713,7 @@ export class LiveSplit extends React.Component<Props, State> {
             }
 
             const showControlButtons = this.state.generalSettings.showControlButtons;
-            const showManualGameTime = this.state.generalSettings.showManualGameTime;
+            const showManualGameTime = this.state.generalSettings.manualGameTime.enabled;
             let newHeight = window.innerHeight - largeMargin;
             if (showControlButtons && showManualGameTime) {
                 newHeight -= 2 * buttonHeight + manualGameTimeHeight + 3 * largeMargin;
@@ -895,6 +897,22 @@ export class LiveSplit extends React.Component<Props, State> {
 
         if (this.state.serverConnection != null) {
             this.state.serverConnection.sendEvent(event);
+        }
+
+        /**
+         * TODO: In hindight I should have abstracted all integrations
+         * regardless of whether they're sockets or not. The connection protocol
+         * should have simply been an implementation detail
+         **/
+        if (
+            this.state.generalSettings.theRunIntegation?.enabled &&
+            this.state.generalSettings.theRunIntegation?.keyState === 'VALID'
+        ) {
+            TheRunServer.handleEvent({
+                event,
+                state: this.state.generalSettings.theRunIntegation,
+                commandSink: this.state.commandSink,
+            });
         }
     }
 

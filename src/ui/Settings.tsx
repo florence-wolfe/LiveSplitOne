@@ -37,6 +37,7 @@ export interface ExtendedSettingsDescriptionFieldJson {
 export type ExtendedSettingsDescriptionValueJson =
     SettingsDescriptionValueJson |
     { RemovableString: string | null } |
+    { HiddenRemovableString: string | null } |
     {
         ServerConnection: {
             url: string | undefined,
@@ -53,6 +54,8 @@ export interface SettingValueFactory<T> {
     fromOptionalEmptyString(): T;
     fromRemovableString?(value: string): T;
     fromRemovableEmptyString?(): T;
+    fromHiddenRemovableString?(value: string): T;
+    fromHiddenRemovableEmptyString?(): T;
     fromAccuracy(value: string): T | null;
     fromDigitsFormat(value: string): T | null;
     fromOptionalTimingMethod(value: string): T | null;
@@ -114,6 +117,12 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
     }
     public fromRemovableEmptyString(): ExtendedSettingsDescriptionValueJson {
         return { RemovableString: null };
+    }
+    public fromHiddenRemovableString(v: string): ExtendedSettingsDescriptionValueJson {
+        return { HiddenRemovableString: v };
+    }
+    public fromHiddenRemovableEmptyString(): ExtendedSettingsDescriptionValueJson {
+        return { HiddenRemovableString: null };
     }
     public fromAccuracy(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
@@ -383,6 +392,40 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                     this.props.setValue(
                                         valueIndex,
                                         factory.fromRemovableEmptyString(),
+                                    );
+                                } else {
+                                    throw Error("Method is not implemented");
+                                }
+                            }}
+                        >
+                            <i className="fa fa-trash" aria-hidden="true" />
+                        </button>
+                    </div>
+                );
+            } else if ("HiddenRemovableString" in value) {
+                component = (
+                    <div className="settings-value-box removable-string">
+                        <input
+                            value={value.HiddenRemovableString || ""}
+                            type="password"
+                            autoComplete="false"
+                            onChange={(e) => {
+                                if (factory.fromHiddenRemovableString) {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromHiddenRemovableString(e.target.value),
+                                    );
+                                } else {
+                                    throw Error("Method is not implemented");
+                                }
+                            }}
+                        />
+                        <button
+                            onClick={() => {
+                                if (factory.fromHiddenRemovableEmptyString) {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromHiddenRemovableEmptyString(),
                                     );
                                 } else {
                                     throw Error("Method is not implemented");

@@ -3,6 +3,7 @@ import { Option, assert } from "../util/OptionUtil";
 import { RunRef, Run, TimingMethod } from "../livesplit-core";
 import { GeneralSettings, MANUAL_GAME_TIME_SETTINGS_DEFAULT } from "../ui/MainSettings";
 import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
+import { THE_RUN_SETTINGS_DEFAULT } from "../api/TheRunServer";
 
 export type HotkeyConfigSettings = unknown;
 export type LayoutSettings = unknown;
@@ -245,21 +246,21 @@ export async function storeGeneralSettings(generalSettings: GeneralSettings) {
 export async function loadGeneralSettings(): Promise<GeneralSettings> {
     const db = await getDb();
 
-    const generalSettings = await db.get("settings", "generalSettings") ?? {};
+    const generalSettings: GeneralSettings = await db.get("settings", "generalSettings") ?? {};
 
     const isTauri = window.__TAURI__ != null;
-
-    if (generalSettings.showManualGameTime === true) {
-        generalSettings.showManualGameTime = MANUAL_GAME_TIME_SETTINGS_DEFAULT;
+    if (generalSettings.manualGameTime?.enabled) {
+        generalSettings.manualGameTime.mode = MANUAL_GAME_TIME_SETTINGS_DEFAULT.mode;
     }
 
     return {
         frameRate: generalSettings.frameRate ?? FRAME_RATE_AUTOMATIC,
         showControlButtons: generalSettings.showControlButtons ?? !isTauri,
-        showManualGameTime: generalSettings.showManualGameTime ?? false,
+        manualGameTime: generalSettings.manualGameTime ?? MANUAL_GAME_TIME_SETTINGS_DEFAULT,
         saveOnReset: generalSettings.saveOnReset ?? false,
         speedrunComIntegration: generalSettings.speedrunComIntegration ?? true,
         splitsIoIntegration: generalSettings.splitsIoIntegration ?? true,
+        theRunIntegation: generalSettings.theRunIntegation ?? THE_RUN_SETTINGS_DEFAULT,
         serverUrl: generalSettings.serverUrl,
         alwaysOnTop: generalSettings.alwaysOnTop ?? (isTauri ? true : undefined),
     };

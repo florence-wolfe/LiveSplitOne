@@ -93,6 +93,7 @@ try {
             />,
         );
     } catch (e: any) {
+        console.error(e);
         if (e.name === "InvalidStateError") {
             alert(`Couldn't load LiveSplit One. \
 You may be in private browsing mode. \

@@ -10,6 +10,7 @@ export interface Props {
 export interface Options {
     title: string | JSX.Element,
     description: string | JSX.Element,
+    placeholder?: string,
     textInput?: boolean,
     defaultText?: string,
     buttons: string[],
@@ -53,6 +54,7 @@ export default class DialogContainer extends React.Component<Props, State> {
             options: {
                 title: "",
                 description: "",
+                placeholder: "",
                 buttons: [],
             },
             input: "",
@@ -97,6 +99,7 @@ export default class DialogContainer extends React.Component<Props, State> {
                                 this.close(0);
                             }
                         }}
+                        placeholder={this.state.options.placeholder}
                     />
                 }
                 <div className="buttons">
